@@ -586,7 +586,7 @@ void updateMenu()
         //if it orders exit so exit game
     }
 }
-}
+
 
 void updatePlaying()
 {
@@ -643,13 +643,76 @@ void updateGameOver()
 // =====================================================================
 void saveGame()
 {
-    // TODO (Feature 8): write score, moves, target, then the board.
+        //opens save file
+        ofstream fout(SAVE_FILE);
+        //if file does not open
+        if (!fout.is_open())
+        {
+            return;
+        }
+        // score,moves left,target
+        fout << score << " " << moves << " " << target << endl;
+        //next lines for board 
+        for (int r = 0; r < ROWS; r++)
+        {
+            for (int c = 0; c < COLS; c++)
+            {
+                fout << board[r][c];
+             //space btw number but not at last
+                if (c < COLS - 1)
+                {
+                    fout << " ";
+                }
+            }
+            fout << endl;//endl so that first line gets separated from board
+        }
+        fout.close();
 }
 
 bool loadGame()
 {
-    // TODO (Feature 8): read the file back; return false if there is no save.
-    return false;
+        // open the save file for reading
+        ifstream fin(SAVE_FILE);
+
+        // no file means no saved game
+        if (!fin.is_open())
+        {
+            return false;
+        }
+
+        // read the first line: score, moves left, target
+        int savedScore, savedMoves, savedTarget;
+        fin >> savedScore >> savedMoves >> savedTarget;
+
+        // an empty file makes this fail
+        if (fin.fail())
+        {
+            return false;
+        }
+
+        // everything is fine so now we can copy the values
+        score = savedScore;
+        moves = savedMoves;
+        target = savedTarget;
+
+        // read the 8 rows of the board
+        for (int r = 0; r < ROWS; r++)
+        {
+            for (int c = 0; c < COLS; c++)
+            {
+                fin >> board[r][c];
+            }
+        }
+
+        fin.close();
+
+        // nothing is selected after Continue
+        selRow = -1;
+        selCol = -1;
+        gameState = PLAYING;
+
+        return true;
+    
 }
 
 void clearSave()
@@ -787,8 +850,8 @@ void drawBoard(sf::RenderWindow& window)
 
             // the candy (0 = empty, nothing to draw)
             int type = board[r][c];
-            if (type >= 1 && type <= NUM_CANDY_TYPES)
-            {
+              if (type >= 1 && type <= NUM_CANDY_TYPES)
+              {
                 candy.setFillColor(colors[type]);
                 candy.setPosition({ x + 7.f, y + 7.f });
 
@@ -805,7 +868,7 @@ void drawBoard(sf::RenderWindow& window)
 
                 shine.setPosition({ x + 20.f, y + 18.f });
                 window.draw(shine);
-            }
+              }
         }
     }
 }
@@ -848,4 +911,3 @@ void drawEndScreen(sf::RenderWindow& window)
         sf::Color::White, true);
     drawText(window, "Press Enter", WINDOW_W / 2.f, 420, 26, sf::Color::Yellow, true);
 }
-cP
