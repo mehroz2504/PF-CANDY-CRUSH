@@ -298,19 +298,44 @@ void drawGame(sf::RenderWindow& window)
 // =====================================================================
 bool loadLevel()
 {
-    // TODO (Feature 2): open LEVEL_FILE; return false if it fails.
-    // TODO (Feature 2): read rows, cols, moves, target.
-    // TODO (Feature 2): read board[r][c] with two nested loops.
+    ifstream fin(LEVEL_FILE);
+    if (!fin.is_open())
+    {
+        return false;                    // menu shows the error message
+    }
 
-    // ---- TEMPORARY: demo board so you can SEE something. DELETE THESE
-    // ---- LINES when your real file reading works.
+    int fileRows, fileCols, fileMoves, fileTarget;
+    fin >> fileRows >> fileCols >> fileMoves >> fileTarget;
+
+    // header must be readable and match our board size
+    if (fin.fail() || fileRows != ROWS || fileCols != COLS ||
+        fileMoves <= 0 || fileTarget <= 0)
+    {
+        return false;
+    }
+
+    // read into a temporary board first, so a bad file cannot ruin board[][]
+    int temp[ROWS][COLS];
+    for (int r = 0; r < ROWS; r++)
+    {
+        for (int c = 0; c < COLS; c++)
+        {
+            fin >> temp[r][c];
+            if (fin.fail() || temp[r][c] < 0 || temp[r][c] > NUM_CANDY_TYPES)
+            {
+                return false;            // missing or invalid number
+            }
+        }
+    }
+    fin.close();
+
+    // everything is valid, so copy it into the real board
     for (int r = 0; r < ROWS; r++)
         for (int c = 0; c < COLS; c++)
-            board[r][c] = (r + c) % NUM_CANDY_TYPES + 1;
-    moves = 20;
-    target = 800;
-    // ---- END TEMPORARY
+            board[r][c] = temp[r][c];
 
+    moves = fileMoves;
+    target = fileTarget;
     return true;
 }
 
@@ -483,6 +508,8 @@ void resolveChain()
 void checkWinLose()
 {
     // TODO (Feature 6): decide win / lose / keep playing (see box above).
+    // Remember: when the game ends, call clearSave() and set
+    // gameState = GAME_OVER.
 }
 
 
@@ -643,81 +670,90 @@ void updateGameOver()
 // =====================================================================
 void saveGame()
 {
-        //opens save file
-        ofstream fout(SAVE_FILE);
-        //if file does not open
-        if (!fout.is_open())
+    //opens save file
+    ofstream fout(SAVE_FILE);
+    //if file does not open
+    if (!fout.is_open())
+    {
+        return;
+    }
+    // score,moves left,target
+    fout << score << " " << moves << " " << target << endl;
+    //next lines for board 
+    for (int r = 0; r < ROWS; r++)
+    {
+        for (int c = 0; c < COLS; c++)
         {
-            return;
-        }
-        // score,moves left,target
-        fout << score << " " << moves << " " << target << endl;
-        //next lines for board 
-        for (int r = 0; r < ROWS; r++)
-        {
-            for (int c = 0; c < COLS; c++)
+            fout << board[r][c];
+            //space btw number but not at last
+            if (c < COLS - 1)
             {
-                fout << board[r][c];
-             //space btw number but not at last
-                if (c < COLS - 1)
-                {
-                    fout << " ";
-                }
+                fout << " ";
             }
-            fout << endl;//endl so that first line gets separated from board
         }
-        fout.close();
+        fout << endl;//endl so that first line gets separated from board
+    }
+    fout.close();
 }
 
 bool loadGame()
 {
-        // open the save file for reading
-        ifstream fin(SAVE_FILE);
+    // open the save file for reading
+    ifstream fin(SAVE_FILE);
 
-        // no file means no saved game
-        if (!fin.is_open())
+    // no file means no saved game
+    if (!fin.is_open())
+    {
+        return false;
+    }
+
+    // read the first line: score, moves left, target
+    int savedScore, savedMoves, savedTarget;
+    fin >> savedScore >> savedMoves >> savedTarget;
+
+    // an empty file makes this fail
+    if (fin.fail())
+    {
+        return false;
+    }
+
+    // read the board into a temporary array first, so a bad file
+    // cannot damage the real board
+    int temp[ROWS][COLS];
+    for (int r = 0; r < ROWS; r++)
+    {
+        for (int c = 0; c < COLS; c++)
         {
-            return false;
-        }
-
-        // read the first line: score, moves left, target
-        int savedScore, savedMoves, savedTarget;
-        fin >> savedScore >> savedMoves >> savedTarget;
-
-        // an empty file makes this fail
-        if (fin.fail())
-        {
-            return false;
-        }
-
-        // everything is fine so now we can copy the values
-        score = savedScore;
-        moves = savedMoves;
-        target = savedTarget;
-
-        // read the 8 rows of the board
-        for (int r = 0; r < ROWS; r++)
-        {
-            for (int c = 0; c < COLS; c++)
+            fin >> temp[r][c];
+            if (fin.fail() || temp[r][c] < 0 || temp[r][c] > NUM_CANDY_TYPES)
             {
-                fin >> board[r][c];
+                return false;
             }
         }
+    }
+    fin.close();
 
-        fin.close();
+    // everything is fine so now we can copy the values
+    for (int r = 0; r < ROWS; r++)
+        for (int c = 0; c < COLS; c++)
+            board[r][c] = temp[r][c];
 
-        // nothing is selected after Continue
-        selRow = -1;
-        selCol = -1;
-        gameState = PLAYING;
+    score = savedScore;
+    moves = savedMoves;
+    target = savedTarget;
 
-        return true;
-    
+    // nothing is selected after Continue
+    selRow = -1;
+    selCol = -1;
+    gameState = PLAYING;
+
+    return true;
 }
 
 void clearSave()
 {
-    // TODO (Feature 8): open SAVE_FILE with ofstream, close it at once.
+    ofstream fout(SAVE_FILE);            // opening for writing empties the file
+    fout.close();
 }
 
 
@@ -850,8 +886,8 @@ void drawBoard(sf::RenderWindow& window)
 
             // the candy (0 = empty, nothing to draw)
             int type = board[r][c];
-              if (type >= 1 && type <= NUM_CANDY_TYPES)
-              {
+            if (type >= 1 && type <= NUM_CANDY_TYPES)
+            {
                 candy.setFillColor(colors[type]);
                 candy.setPosition({ x + 7.f, y + 7.f });
 
@@ -868,7 +904,7 @@ void drawBoard(sf::RenderWindow& window)
 
                 shine.setPosition({ x + 20.f, y + 18.f });
                 window.draw(shine);
-              }
+            }
         }
     }
 }
