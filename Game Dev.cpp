@@ -717,7 +717,9 @@ bool loadGame()
 
 void clearSave()
 {
-    // TODO (Feature 8): open SAVE_FILE with ofstream, close it at once.
+      //opening through ofstream throws away everything from file while not using it just empties it
+      ofstream fout(SAVE_FILE);
+      fout.close();
 }
 
 
