@@ -375,21 +375,67 @@ bool loadLevel()
 // =====================================================================
 bool cellFromClick(int x, int y, int& row, int& col)
 {
-    // TODO (Feature 3): return false if (x, y) is outside the board.
-    // TODO (Feature 3): otherwise compute row and col and return true.
-    return false;
+    if (mouseX < BOARD_X || mouseY < BOARD_Y)
+    {
+        return false;
+    }
+
+    row = (mouseY - BOARD_Y) / CELL_SIZE;
+    col = (mouseX - BOARD_X) / CELL_SIZE;
+
+    if (row >= 8 || col >= 8)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 void handleBoardClick(int x, int y)
 {
-    // TODO (Feature 3): use cellFromClick, then the rules from the box above.
+    if (mouseX < BOARD_X || mouseX >= BOARD_X + 8 * CELL_SIZE ||
+        mouseY < BOARD_Y || mouseY >= BOARD_Y + 8 * CELL_SIZE)
+    {
+        return;
+    }
+
+    int col = (mouseX - BOARD_X) / CELL_SIZE;
+    int row = (mouseY - BOARD_Y) / CELL_SIZE;
+
+    if (board[row][col] == 0)
+    {
+        return;
+    }
+
+    if (selectedRow == -1)
+    {
+        selectedRow = row;
+        selectedCol = col;
+        return;
+    }
+    int rowDistance = row - selectedRow;
+    int colDistance = col - selectedCol;
+
+    if (rowDistance < 0)
+        rowDistance = -rowDistance;
+
+    if (colDistance < 0)
+        colDistance = -colDistance;
+
+    if (rowDistance + colDistance != 1)
+    {
+        selectedRow = row;
+        selectedCol = col;
+        return;
+    }
 }
 
-bool trySwap(int r1, int c1, int r2, int c2)
+bool trySwap(int r1, int c1, int r2, int c2) 
 {
-    // TODO (Feature 3): swap, check findMatches(), swap back if no match.
-    // TODO (Feature 3): if good: moves--, resolveChain(), checkWinLose().
-    return false;
+    //Swapping Candies
+    int temp = board[row1][col1];
+    board[row1][col1] = board[row2][col2];
+    board[row2][col2] = temp;
 }
 
 
