@@ -375,9 +375,20 @@ bool loadLevel()
 // =====================================================================
 bool cellFromClick(int x, int y, int& row, int& col)
 {
-    // TODO (Feature 3): return false if (x, y) is outside the board.
-    // TODO (Feature 3): otherwise compute row and col and return true.
-    return false;
+    if (mouseX < BOARD_X || mouseY < BOARD_Y)
+    {
+        return false;
+    }
+
+    row = (mouseY - BOARD_Y) / CELL_SIZE;
+    col = (mouseX - BOARD_X) / CELL_SIZE;
+
+    if (row >= 8 || col >= 8)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 void handleBoardClick(int x, int y)
