@@ -382,7 +382,41 @@ bool cellFromClick(int x, int y, int& row, int& col)
 
 void handleBoardClick(int x, int y)
 {
-    // TODO (Feature 3): use cellFromClick, then the rules from the box above.
+    if (mouseX < BOARD_X || mouseX >= BOARD_X + 8 * CELL_SIZE ||
+        mouseY < BOARD_Y || mouseY >= BOARD_Y + 8 * CELL_SIZE)
+    {
+        return;
+    }
+
+    int col = (mouseX - BOARD_X) / CELL_SIZE;
+    int row = (mouseY - BOARD_Y) / CELL_SIZE;
+
+    if (board[row][col] == 0)
+    {
+        return;
+    }
+
+    if (selectedRow == -1)
+    {
+        selectedRow = row;
+        selectedCol = col;
+        return;
+    }
+    int rowDistance = row - selectedRow;
+    int colDistance = col - selectedCol;
+
+    if (rowDistance < 0)
+        rowDistance = -rowDistance;
+
+    if (colDistance < 0)
+        colDistance = -colDistance;
+
+    if (rowDistance + colDistance != 1)
+    {
+        selectedRow = row;
+        selectedCol = col;
+        return;
+    }
 }
 
 bool trySwap(int r1, int c1, int r2, int c2) 
