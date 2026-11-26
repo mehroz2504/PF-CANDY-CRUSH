@@ -385,8 +385,9 @@ void handleBoardClick(int x, int y)
     // TODO (Feature 3): use cellFromClick, then the rules from the box above.
 }
 
-bool trySwap(int r1, int c1, int r2, int c2)
+bool trySwap(int r1, int c1, int r2, int c2) 
 {
+    //Swapping Candies
     int temp = board[row1][col1];
     board[row1][col1] = board[row2][col2];
     board[row2][col2] = temp;
