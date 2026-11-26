@@ -387,9 +387,9 @@ void handleBoardClick(int x, int y)
 
 bool trySwap(int r1, int c1, int r2, int c2)
 {
-    // TODO (Feature 3): swap, check findMatches(), swap back if no match.
-    // TODO (Feature 3): if good: moves--, resolveChain(), checkWinLose().
-    return false;
+    int temp = board[row1][col1];
+    board[row1][col1] = board[row2][col2];
+    board[row2][col2] = temp;
 }
 
 

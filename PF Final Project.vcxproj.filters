@@ -18,5 +18,8 @@
     <ClCompile Include="Game Dev.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Candy Crush.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
