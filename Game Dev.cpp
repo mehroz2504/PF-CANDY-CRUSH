@@ -507,9 +507,14 @@ void resolveChain()
 // =====================================================================
 void checkWinLose()
 {
-    // TODO (Feature 6): decide win / lose / keep playing (see box above).
-    // Remember: when the game ends, call clearSave() and set
-    // gameState = GAME_OVER.
+        // target reached, the player wins
+        if (score >= target)
+        {
+            playerWon = true;
+            clearSave();
+            gameState = GAME_OVER;
+        }
+       
 }
 
 
