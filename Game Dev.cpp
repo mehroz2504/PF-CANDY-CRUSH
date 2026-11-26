@@ -507,14 +507,20 @@ void resolveChain()
 // =====================================================================
 void checkWinLose()
 {
-        // target reached, the player wins
+        //if the target is reached player wins
         if (score >= target)
         {
             playerWon = true;
             clearSave();
             gameState = GAME_OVER;
         }
-       
+        //target not reached and no moves left the player loses
+        else if (moves <= 0)
+        {
+            playerWon = false;
+            clearSave();
+            gameState = GAME_OVER;
+        }
 }
 
 
