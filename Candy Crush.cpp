@@ -5,6 +5,7 @@ const int BOARD_X = 100;
 const int BOARD_Y = 80;
 const int CELL_SIZE = 60;
 
+
 int selectedRow = -1;
 int selectedCol = -1;
 
