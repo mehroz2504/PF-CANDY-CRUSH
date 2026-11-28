@@ -102,3 +102,47 @@ void drawSelectedCandy(sf::RenderWindow& window)
 
     window.draw(border);
 }
+
+void removeMarked()
+{
+    for (int r = 0; r < ROWS; r++)
+    {
+        for (int c = 0; c < COLS; c++)
+        {
+            if (marked[r][c] == true)
+            {
+                board[r][c] = 0;               // candy removed
+                score += POINTS_PER_CANDY;     // 10 points for each candy
+            }
+        }
+    }
+
+void handleInput(sf::RenderWindow& window)
+{
+    clicked = false;
+    pressedKey = KEY_NONE;
+
+    while (const std::optional event = window.pollEvent())
+    {
+        if (event->is<sf::Event::Closed>())
+        {
+            window.close();                      // X button closes the window
+        }
+        else if (const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>())
+        {
+            if (mouse->button == sf::Mouse::Button::Left)
+            {
+                clickX = mouse->position.x;
+                clickY = mouse->position.y;
+                clicked = true;
+            }
+        }
+        else if (const auto* key = event->getIf<sf::Event::KeyPressed>())
+        {
+            if (key->code == sf::Keyboard::Key::Escape)     pressedKey = KEY_ESCAPE;
+            else if (key->code == sf::Keyboard::Key::Enter) pressedKey = KEY_ENTER;
+            else if (key->code == sf::Keyboard::Key::Up)    pressedKey = KEY_UP;
+            else if (key->code == sf::Keyboard::Key::Down)  pressedKey = KEY_DOWN;
+        }
+    }
+}
