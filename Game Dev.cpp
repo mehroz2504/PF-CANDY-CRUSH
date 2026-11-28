@@ -120,6 +120,22 @@ void drawGame(sf::RenderWindow& window);
 bool loadLevel();
 // Feature 3
 bool cellFromClick(int x, int y, int& row, int& col);
+// click is outside the board, so say false
+if (x < BOARD_X || x >= BOARD_X + COLS * CELL)
+{
+    return false;
+}
+if (y < BOARD_Y || y >= BOARD_Y + ROWS * CELL)
+{
+    return false;
+}
+
+// click is inside the board, so find which cell it is
+col = (int)((x - BOARD_X) / CELL);
+row = (int)((y - BOARD_Y) / CELL);
+
+return true;
+}
 void handleBoardClick(int x, int y);
 bool trySwap(int r1, int c1, int r2, int c2);
 // Feature 4
