@@ -102,3 +102,18 @@ void drawSelectedCandy(sf::RenderWindow& window)
 
     window.draw(border);
 }
+
+void removeMarked()
+{
+    for (int r = 0; r < ROWS; r++)
+    {
+        for (int c = 0; c < COLS; c++)
+        {
+            if (marked[r][c] == true)
+            {
+                board[r][c] = 0;               // candy removed
+                score += POINTS_PER_CANDY;     // 10 points for each candy
+            }
+        }
+    }
+
