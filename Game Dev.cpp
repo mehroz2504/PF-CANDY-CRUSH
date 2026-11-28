@@ -137,7 +137,61 @@ row = (int)((y - BOARD_Y) / CELL);
 return true;
 }
 void handleBoardClick(int x, int y);
+int row, col;
+
+// if the click is not on the board, do nothing
+if (cellFromClick(x, y, row, col) == false)
+{
+    return;
+}
+
+// first click, nothing is selected yet
+if (selRow == -1)
+{
+    selRow = row;
+    selCol = col;
+}
+else
+{
+    // how far is the new candy from the selected one?
+    int distance = abs(selRow - row) + abs(selCol - col);
+
+    if (distance == 1)
+    {
+        // it is a neighbour (up, down, left or right), so try to swap
+        int oldRow = selRow;
+        int oldCol = selCol;
+
+        // nothing stays selected after a swap
+        selRow = -1;
+        selCol = -1;
+
 bool trySwap(int r1, int c1, int r2, int c2);
+// swap the two candies
+int temp = board[r1][c1];
+board[r1][c1] = board[r2][c2];
+board[r2][c2] = temp;
+
+// no match made, so swap them back (this does not use a move)
+if (findMatches() == 0)
+{
+    temp = board[r1][c1];
+    board[r1][c1] = board[r2][c2];
+    board[r2][c2] = temp;
+    return false;
+}
+
+// good swap, it uses exactly one move
+moves--;
+
+// remove, drop and refill until there are no more matches
+resolveChain();
+
+// check if the player won or lost
+checkWinLose();
+
+return true;
+    }
 // Feature 4
 int  findMatches();
 // Feature 5
