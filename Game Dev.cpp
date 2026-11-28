@@ -623,7 +623,7 @@ void resolveChain()
 // =====================================================================
 void checkWinLose()
 {
-        //if the target is reached player wins
+        //player wins if target is reached
         if (score >= target)
         {
             playerWon = true;
